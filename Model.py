@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow.contrib.layers as layers
 class Model:
+    #TODO : replace model to CNN
     def __init__(self,labels=None,input_shape = None):
         self.labels =labels
         self.input_dims = input_shape
@@ -9,8 +10,9 @@ class Model:
     def encoder(self,X,name='encoder',sess=None):
         print('encoder')
 
-        with tf.variable_scope(name,reuse=tf.AUTO_REUSE):
+        with tf.variable_scope(name):
             #encoder_x = tf.reshape(X,[1,-1])
+
             encoder_x = tf.layers.flatten(X)
             encoder_w = tf.get_variable(
                 "w",
@@ -28,7 +30,7 @@ class Model:
 
 
     def decoder(self,Z,name='decoder',sess=None):
-        with tf.variable_scope(name,reuse=tf.AUTO_REUSE):
+        with tf.variable_scope(name):
             self.Z = Z
             decoder_w = tf.get_variable(
                 "decoder_W",
@@ -43,9 +45,9 @@ class Model:
                 initializer=layers.xavier_initializer()
             )
             self.affined_decoder = tf.matmul(Z, decoder_w) + decoder_b
-            #out = tf.tanh(affined_decoder)
-        #return out
-        return self.affined_decoder
+            self.out = tf.sigmoid(self.affined_decoder)
+
+        return tf.clip_by_value(self.out,1e-8,1-(1e-8))
 
     def predict_decoder(self,Z,sess):
-        return sess.run(self.affined_decoder,feed_dict = {self.Z:Z})
+        return sess.run(self.out,feed_dict = {self.Z:Z})

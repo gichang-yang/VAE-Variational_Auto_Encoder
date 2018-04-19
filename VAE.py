@@ -16,31 +16,32 @@ class VAE:
     def __build_net__(self):
       with tf.variable_scope('vae',reuse=tf.AUTO_REUSE):
         self.X = tf.placeholder(dtype=tf.float32,shape=self.shape)
-        z_mean, z_std_dev = self.model.encoder(self.X, name="train_encoder")
+        z_mean, z_var = self.model.encoder(self.X, name="train_encoder")
         self.KLD = tf.reduce_mean(
             0.5 * tf.reduce_sum(
-                tf.square(z_std_dev) + tf.square(z_mean) + 1 - tf.log(tf.square(z_std_dev))
-                , axis=list(range(self.X.shape.ndims))[1:]
+                #tf.square(z_std_dev) + tf.square(z_mean) + 1 - tf.log(tf.square(z_std_dev))
+                z_var + tf.square(z_mean) -1 - tf.log(z_var)
+                , axis=1
             ),
             axis=0
         )
 
-        dec_z = z_std_dev * np.random.normal(size=(self.X.shape[0].value, self.labels)) + z_mean
+        dec_z = tf.sqrt(z_var) * np.random.normal(size=(self.X.shape[0].value, self.labels)) + z_mean
         #dec_z = z_std_dev * tf.random_normal(shape= [self.X.shape[0], tf.Dimension(self.labels)]) + z_mean
-        print(dec_z)
         decoded_X = self.model.decoder(dec_z)
         self.likelihood = tf.reduce_mean(
             tf.reduce_sum(
-                tf.nn.sigmoid_cross_entropy_with_logits(logits=decoded_X, labels=self.X)
+                self.X * tf.log(decoded_X) + (1 - self.X) * (tf.log(1 - decoded_X))
+                #tf.nn.sigmoid_cross_entropy_with_logits(logits=decoded_X, labels=self.X)
                 , axis=list(range(self.X.shape.ndims))[1:]
             ),
             axis=0
         )
-        self.loss = self.KLD - self.likelihood  # reverse sequence for minimize. ( argmax -> argmin )
+        self.loss = 200 * self.KLD - self.likelihood  # reverse sequence for minimize. ( argmax -> argmin )
         self.optim = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
     def train(self,X,sess):
-        return sess.run([self.optim,self.loss],feed_dict={self.X:X})[1]
+        return sess.run([self.optim,self.loss,self.KLD,self.likelihood],feed_dict={self.X:X})
 
     def predict(self,Z,sess):
         return self.model.predict_decoder(Z,sess=sess)
