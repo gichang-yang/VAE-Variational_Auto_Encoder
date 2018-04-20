@@ -1,11 +1,12 @@
 import tensorflow as tf
 import tensorflow.contrib.layers as layers
 class Model:
+
     #TODO : replace model to CNN
+
     def __init__(self,labels=None,input_shape = None):
         self.labels =labels
         self.input_dims = input_shape
-
 
     def encoder(self,X,name='encoder',sess=None):
         print('encoder')
@@ -24,7 +25,7 @@ class Model:
             affined_encoder = tf.matmul(encoder_x,encoder_w) + encoder_b
             self.lay_out = tf.nn.relu(affined_encoder)
             mean = self.lay_out[:,:self.labels]
-            std_dev = tf.nn.softplus(self.lay_out[:,self.labels:])
+            std_dev = 1e-6 + tf.nn.softplus(self.lay_out[:,self.labels:])
 
         return mean,std_dev
 
@@ -46,8 +47,8 @@ class Model:
             )
             self.affined_decoder = tf.matmul(Z, decoder_w) + decoder_b
             self.out = tf.sigmoid(self.affined_decoder)
-
-        return tf.clip_by_value(self.out,1e-8,1-(1e-8))
+            #self.out = tf.clip_by_value(self.out,clip_value_min=1e-8,clip_value_max=1-(1e-8))
+        return self.out
 
     def predict_decoder(self,Z,sess):
         return sess.run(self.out,feed_dict = {self.Z:Z})
