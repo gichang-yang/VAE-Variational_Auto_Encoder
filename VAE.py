@@ -12,7 +12,7 @@ class VAE:
         self.__build_net__()
 
     def __build_net__(self):
-      with tf.variable_scope('vae',reuse=tf.AUTO_REUSE):
+      with tf.variable_scope('vae',reuse=tf.AUTO_REUSE) and tf.device('/gpu:0'):
         self.X = tf.placeholder(dtype=tf.float32,shape=self.shape)
         z_mean, z_std_dev = self.model.encoder(self.X, name="train_encoder")
         self.KLD = tf.reduce_mean(
