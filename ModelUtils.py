@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow.contrib.layers as layers
 
 
-def residual(cycle,layer,tensor,dropout):
+def residual(cycle,layer,tensor,dropout,net = 'encoder'):
         tensor = tf.layers.dropout(tensor,rate=dropout)
         conv = tf.layers.conv2d(
             inputs=tensor,
@@ -10,7 +10,7 @@ def residual(cycle,layer,tensor,dropout):
             kernel_size=[3, 3],
             strides=[1, 1],
             kernel_initializer=tf.contrib.layers.xavier_initializer(),
-            name='conv'+str(cycle)+'_'+str(layer),
+            name='conv_'+net+str(cycle)+'_'+str(layer),
             activation=tf.nn.relu,
             padding='same',
         )
@@ -25,15 +25,15 @@ def residual(cycle,layer,tensor,dropout):
             )
         #return conv + tensor
 
-def affine(tensor,input_shape,output_shape,num = 0):
+def affine(tensor,input_shape,output_shape,num=0,net='encoder'):
     w = tf.get_variable(
-        "W"+str(num),
+        "W_"+net+str(num),
         shape=[input_shape, output_shape],
         dtype=tf.float32,
         initializer=layers.xavier_initializer()
     )
     b = tf.get_variable(
-        "b"+str(num),
+        "b_"+net+str(num),
         shape=[output_shape],
         dtype=tf.float32,
         initializer=layers.xavier_initializer()

@@ -18,7 +18,7 @@ class Model:
             #encoder_x = tf.reshape(X,[1,-1])
             encoder_x = tf.layers.flatten(X)
 
-            h0 = mu.affine(encoder_x,encoder_x.shape[1],2 ** 10,affine_iter)
+            h0 = mu.affine(encoder_x,encoder_x.shape[1],2 ** 10,affine_iter,name)
             affine_iter += 1
 
             lay1 = tf.reshape(h0, shape=[tf.shape(encoder_x)[0], 32, 32, 1], name="reshape1")
@@ -45,7 +45,7 @@ class Model:
             conv = pool0
             for i in range(cycle):
                 for j in range(i + 3):
-                    conv = mu.residual(i, j, conv, self.dropout)
+                    conv = mu.residual(i, j, conv, self.dropout,name)
 
             ap1 = tf.layers.average_pooling2d(
                 inputs=conv,
@@ -57,7 +57,7 @@ class Model:
 
             ap_flat = tf.layers.flatten(ap1)
 
-            self.fc_layer = mu.affine(ap_flat,ap_flat.shape[1],self.labels * 2,affine_iter)
+            self.fc_layer = mu.affine(ap_flat,ap_flat.shape[1],self.labels * 2,affine_iter,name)
             self.lay_out = tf.nn.relu(self.fc_layer)
 
             mean = self.lay_out[:,:self.labels]
@@ -71,7 +71,7 @@ class Model:
         with tf.variable_scope(name) and tf.device('/gpu:0'):
             self.Z = Z
 
-            h0 = mu.affine(self.Z, Z.shape[1], 2 ** 10, affine_iter)
+            h0 = mu.affine(self.Z, Z.shape[1], 2 ** 10, affine_iter,name)
             affine_iter += 1
 
             lay1 = tf.reshape(h0, shape=[tf.shape(self.Z)[0], 32, 32, 1], name="reshape1")
@@ -98,7 +98,7 @@ class Model:
             conv = pool0
             for i in range(cycle):
                 for j in range(i + 3):
-                    conv = mu.residual(i, j, conv, self.dropout)
+                    conv = mu.residual(i, j, conv, self.dropout,name)
 
             ap1 = tf.layers.average_pooling2d(
                 inputs=conv,
@@ -110,7 +110,7 @@ class Model:
 
             ap_flat = tf.layers.flatten(ap1)
 
-            self.affined_decoder = mu.affine(ap_flat,ap_flat.shape[1],self.input_dims[1],affine_iter)
+            self.affined_decoder = mu.affine(ap_flat,ap_flat.shape[1],self.input_dims[1],affine_iter,name)
             self.out = tf.sigmoid(self.affined_decoder)
         return self.out
 

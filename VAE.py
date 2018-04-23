@@ -12,12 +12,12 @@ class VAE:
         self.__build_net__()
 
     def __build_net__(self):
-      with tf.variable_scope('vae',reuse=tf.AUTO_REUSE) and tf.device('/gpu:0'):
+      with tf.variable_scope('vae',reuse=tf.AUTO_REUSE) :
         self.X = tf.placeholder(dtype=tf.float32,shape=self.shape)
         z_mean, z_std_dev = self.model.encoder(self.X, name="train_encoder")
         self.KLD = tf.reduce_mean(
             0.5 * tf.reduce_sum(
-                tf.square(z_std_dev) + tf.square(z_mean) + 1 - tf.log(tf.square(z_std_dev) + 1e-8)
+                tf.square(z_std_dev) + tf.square(z_mean) + 1 - tf.log(tf.square(z_std_dev))
                 #z_var + tf.square(z_mean) -1 - tf.log(z_var+ 1e-8)
                 , axis=1
             ),
