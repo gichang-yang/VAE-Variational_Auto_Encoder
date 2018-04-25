@@ -21,7 +21,7 @@ class Model:
             h0 = mu.affine(encoder_x,encoder_x.shape[1],2 ** 10,affine_iter,name)
             affine_iter += 1
 
-            lay1 = tf.reshape(h0, shape=[tf.shape(encoder_x)[0], 32, 32, 1], name="reshape1")
+            lay1 = tf.reshape(h0, shape=[tf.shape(encoder_x)[0], 32, 32, 1], name="reshape1_encoder")
 
             conv0 = tf.layers.conv2d(
                 inputs=lay1,
@@ -53,7 +53,7 @@ class Model:
                 pool_size=2,
                 strides=1,
                 padding='valid',
-                name="max_pool1"
+                name="max_pool1_encoder"
             )
 
             ap_flat = tf.layers.flatten(ap1)
@@ -75,7 +75,7 @@ class Model:
             h0 = mu.affine(self.Z, Z.shape[1], 2 ** 10, affine_iter,name)
             affine_iter += 1
 
-            lay1 = tf.reshape(h0, shape=[tf.shape(self.Z)[0], 32, 32, 1], name="reshape1")
+            lay1 = tf.reshape(h0, shape=[tf.shape(self.Z)[0], 32, 32, 1], name="reshape1_decoder")
 
             conv0 = tf.layers.conv2d(
                 inputs=lay1,
@@ -106,7 +106,7 @@ class Model:
                 pool_size=2,
                 strides=1,
                 padding='valid',
-                name="max_pool1"
+                name="max_pool1_decoder"
             )
 
             ap_flat = tf.layers.flatten(ap1)
