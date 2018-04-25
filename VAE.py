@@ -26,7 +26,7 @@ class VAE:
         )
 
         self.Z = tf.placeholder(dtype=tf.float32,shape=[self.X.shape[0].value, self.labels])
-        dec_z = z_std_dev *self.Z  + z_mean
+        dec_z = z_std_dev * tf.random_normal(z_std_dev.shape,0,1,dtype=tf.float32) + z_mean
         self.pred_X = self.model.decoder(self.Z)
 
         decoded_X =self.model.decoder(dec_z)
@@ -42,12 +42,12 @@ class VAE:
 
     def train(self,X,sess,dropout=0):
         return sess.run([self.optim,self.loss,self.KLD,self.likelihood],
-                        feed_dict={self.Z:np.random.normal(size=(self.X.shape[0].value, self.labels)),
+                        feed_dict={
                                    self.X:X,
                                    self.dropout:dropout}
                         )
 
-    def predict(self,Z,sess,dropout=0):
+    def predict(self,Z,sess):
         return sess.run(self.pred_X,feed_dict={
-            self.Z:Z,self.dropout:dropout
+            self.Z:Z,self.dropout:0
         })
