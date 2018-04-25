@@ -10,7 +10,7 @@ def residual(cycle,layer,tensor,dropout,net = 'encoder'):
             kernel_size=[3, 3],
             strides=[1, 1],
             kernel_initializer=tf.contrib.layers.xavier_initializer(),
-            name='conv0_'+net+str(cycle)+'_'+str(layer),
+            name='conv_res1_'+net+str(cycle)+'_'+str(layer),
             activation=tf.nn.relu,
             padding='same',
         )
@@ -21,7 +21,7 @@ def residual(cycle,layer,tensor,dropout,net = 'encoder'):
             kernel_size=[3, 3],
             strides=[1, 1],
             kernel_initializer=tf.contrib.layers.xavier_initializer(),
-            name='conv1_'+net+str(cycle)+'_'+str(layer),
+            name='conv_res2_'+net+str(cycle)+'_'+str(layer),
             activation=tf.nn.relu,
             padding='same',
         )
