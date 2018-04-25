@@ -41,7 +41,7 @@ class Model:
                 name="max_pool0"
             )
 
-            cycle = 6
+            cycle = 4
             conv = pool0
             for i in range(cycle):
                 for j in range(i + 3):
@@ -96,7 +96,7 @@ class Model:
                 name="max_pool0"
             )
 
-            cycle = 6
+            cycle = 3
             conv = pool0
             for i in range(cycle):
                 for j in range(i + 3):
