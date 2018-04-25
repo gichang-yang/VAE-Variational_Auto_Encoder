@@ -31,7 +31,6 @@ class VAE:
         self.likelihood = tf.reduce_mean(
             tf.reduce_sum(
                 self.X * tf.log(decoded_X + 1e-8) + (1 - self.X) * (tf.log(1e-8 + (1 - decoded_X)))
-                #tf.nn.sigmoid_cross_entropy_with_logits(logits=decoded_X, labels=self.X)
                 , #axis=list(range(self.X.shape.ndims))[1:]
                 axis=1
             ),

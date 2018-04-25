@@ -46,6 +46,8 @@ class Model:
             for i in range(cycle):
                 for j in range(i + 3):
                     conv = mu.residual(i, j, conv, self.dropout,name)
+                    if j != i+2:
+                        conv = tf.nn.relu(conv)
 
             ap1 = tf.layers.average_pooling2d(
                 inputs=conv,
