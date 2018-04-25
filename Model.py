@@ -6,7 +6,7 @@ class Model:
 
     #TODO : replace model to CNN
 
-    def __init__(self,labels=None,input_shape = None,dropout=0):
+    def __init__(self,labels=None,input_shape = None,dropout=None):
         self.labels =labels
         self.input_dims = input_shape
         self.dropout = dropout
@@ -28,7 +28,7 @@ class Model:
                 filters=8,
                 kernel_size=[7, 7],
                 strides=[2, 2],
-                name="conv0",
+                name="conv0_encoder",
                 activation=tf.nn.relu,
                 padding='same'
             )
@@ -38,7 +38,7 @@ class Model:
                 pool_size=2,
                 strides=1,
                 padding='same',
-                name="max_pool0"
+                name="max_pool0_encoder"
             )
 
             cycle = 3
@@ -82,7 +82,7 @@ class Model:
                 filters=8,
                 kernel_size=[7, 7],
                 strides=[2, 2],
-                name="conv0",
+                name="conv0_decoder",
                 activation=tf.nn.relu,
                 padding='same'
             )
@@ -92,7 +92,7 @@ class Model:
                 pool_size=2,
                 strides=1,
                 padding='same',
-                name="max_pool0"
+                name="max_pool0_decoder"
             )
 
             cycle = 3
@@ -116,6 +116,6 @@ class Model:
         return self.out
 
     def predict_decoder(self,Z,sess):
-        return sess.run(self.out,feed_dict = {self.Z:Z})
+        return sess.run(self.out,feed_dict = {self.Z:Z,self.dropout:0})
 
 

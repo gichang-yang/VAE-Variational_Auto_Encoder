@@ -13,6 +13,7 @@ class VAE:
 
     def __build_net__(self):
       with tf.variable_scope('vae',reuse=tf.AUTO_REUSE) :
+        self.dropout = tf.placeholder(dtype=tf.float16,shape=(),name="dropout")
         self.X = tf.placeholder(dtype=tf.float32,shape=self.shape)
         z_mean, z_std_dev = self.model.encoder(self.X, name="train_encoder")
         self.KLD = tf.reduce_mean(
@@ -39,8 +40,8 @@ class VAE:
         self.loss = self.KLD - self.likelihood  # reverse sequence for minimize. ( argmax -> argmin )
         self.optim = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
-    def train(self,X,sess):
-        return sess.run([self.optim,self.loss,self.KLD,self.likelihood],feed_dict={self.X:X})
+    def train(self,X,sess,dropout=0):
+        return sess.run([self.optim,self.loss,self.KLD,self.likelihood],feed_dict={self.X:X,self.dropout:dropout})
 
-    def predict(self,Z,sess):
+    def predict(self,Z,sess,dropout=0):
         return self.model.predict_decoder(Z,sess=sess)
