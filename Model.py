@@ -112,7 +112,7 @@ class Model:
             ap_flat = tf.layers.flatten(ap1)
 
             self.affined_decoder = mu.affine(ap_flat,ap_flat.shape[1],self.input_dims[1],affine_iter,name)
-            self.out = tf.tanh(self.affined_decoder) / 2 + 1
+            self.out = (tf.tanh(self.affined_decoder)+1) / 2
         return self.out
 
     def predict_decoder(self,Z,sess):
