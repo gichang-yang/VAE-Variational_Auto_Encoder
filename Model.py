@@ -115,7 +115,4 @@ class Model:
             self.out = (tf.tanh(self.affined_decoder)+1) / 2
         return self.out
 
-    def predict_decoder(self,Z,sess):
-        return sess.run(self.out,feed_dict = {self.Z:Z,self.dropout:0})
-
 

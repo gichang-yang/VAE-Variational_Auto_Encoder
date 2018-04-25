@@ -25,15 +25,15 @@ class VAE:
             axis=0
         )
 
-        dec_z = z_std_dev \
-                * np.random.normal(size=(self.X.shape[0].value, self.labels)) + z_mean
-        #dec_z = z_std_dev * tf.random_normal(shape= [self.X.shape[0], tf.Dimension(self.labels)]) + z_mean
+        self.Z = tf.placeholder(dtype=tf.float32,shape=[self.X.shape[0].value, self.labels])
+        dec_z = z_std_dev *self.Z  + z_mean
+        self.pred_X = self.model.decoder(self.Z)
+
         decoded_X =self.model.decoder(dec_z)
         self.likelihood = tf.reduce_mean(
             tf.reduce_sum(
                 self.X * tf.log(decoded_X + 1e-8) + (1 - self.X) * (tf.log(1e-8 + (1 - decoded_X)))
-                , #axis=list(range(self.X.shape.ndims))[1:]
-                axis=1
+                , axis=1
             ),
             axis=0
         )
@@ -41,7 +41,13 @@ class VAE:
         self.optim = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
     def train(self,X,sess,dropout=0):
-        return sess.run([self.optim,self.loss,self.KLD,self.likelihood],feed_dict={self.X:X,self.dropout:dropout})
+        return sess.run([self.optim,self.loss,self.KLD,self.likelihood],
+                        feed_dict={self.Z:np.random.normal(size=(self.X.shape[0].value, self.labels)),
+                                   self.X:X,
+                                   self.dropout:dropout}
+                        )
 
     def predict(self,Z,sess,dropout=0):
-        return self.model.predict_decoder(Z,sess=sess)
+        return sess.run(self.pred_X,feed_dict={
+            self.Z:Z,self.dropout:dropout
+        })
