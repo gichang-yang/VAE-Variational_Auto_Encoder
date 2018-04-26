@@ -2,7 +2,7 @@ import tensorflow as tf
 import Model as model
 import numpy as np
 class VAE:
-    def __init__(self,input_shape,batch_size,label_size = 16,learning_rate=1e-2):
+    def __init__(self,input_shape,batch_size,label_size = 16,learning_rate=1e-2,sess=None,path=None):
         self.labels = label_size
         self.learning_rate = learning_rate
         self.batch_size = batch_size
@@ -10,6 +10,13 @@ class VAE:
         self.shape = [batch_size] + input_shape
         self.model = model.Model(labels=self.labels,input_shape = self.shape)
         self.__build_net__()
+        self.sess = sess
+        if path == None:
+            self.sess.run(tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()))
+        else:
+            saver = tf.train.Saver()
+            saver.restore(self.sess, path)
+
 
     def __build_net__(self):
       with tf.variable_scope('vae',reuse=tf.AUTO_REUSE) :
@@ -40,14 +47,14 @@ class VAE:
         self.loss = self.KLD - self.likelihood  # reverse sequence for minimize. ( argmax -> argmin )
         self.optim = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
-    def train(self,X,sess,dropout=0):
-        return sess.run([self.optim,self.loss,self.KLD,self.likelihood],
+    def train(self,X,dropout=0):
+        return self.sess.run([self.optim,self.loss,self.KLD,self.likelihood],
                         feed_dict={
                                    self.X:X,
                                    self.dropout:dropout}
                         )
 
-    def predict(self,Z,sess):
-        return sess.run(self.pred_X,feed_dict={
+    def predict(self,Z):
+        return self.sess.run(self.pred_X,feed_dict={
             self.Z:Z,self.dropout:0
         })
