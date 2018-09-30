@@ -2,7 +2,7 @@ import tensorflow as tf
 import Model as model
 import numpy as np
 class VAE:
-    def __init__(self,input_shape,batch_size,label_size = 16,learning_rate=1e-2,sess=None,path=None):
+    def __init__(self,input_shape,batch_size,label_size = 16,learning_rate=1e-2,sess=None , path=None):
         self.labels = label_size
         self.learning_rate = learning_rate
         self.batch_size = batch_size
@@ -33,6 +33,7 @@ class VAE:
         )
 
         self.Z = tf.placeholder(dtype=tf.float32,shape=[self.X.shape[0].value, self.labels])
+        tf.set_random_seed(777)
         dec_z = z_std_dev * tf.random_normal(z_std_dev.shape,0,1,dtype=tf.float32) + z_mean
         self.pred_X = self.model.decoder(self.Z)
 

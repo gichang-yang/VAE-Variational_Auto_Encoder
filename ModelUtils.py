@@ -49,3 +49,4 @@ def affine(tensor,input_shape,output_shape,num=0,net='encoder'):
     )
 
     return tf.matmul(tensor,w) + b
+
