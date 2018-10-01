@@ -20,9 +20,9 @@ class Model:
             #encoder_x = tf.reshape(X,[1,-1])
             encoder_x = tf.layers.flatten(X)
 
-            h0 = mu.affine(encoder_x,encoder_x.shape[1],encoder_x.shape[1] // 2,affine_iter,name,activation=tf.nn.relu)
+            h0 = mu.affine(encoder_x,encoder_x.shape[1],encoder_x.shape[1] // 2,affine_iter,name,activation=tf.nn.tanh)
             affine_iter += 1
-            h1 = mu.affine(h0,h0.shape[1],h0.shape[1],affine_iter,name,activation=tf.nn.tanh)
+            h1 = mu.affine(h0,h0.shape[1],h0.shape[1],affine_iter,name,activation=tf.nn.leaky_relu)
             affine_iter += 1
             #lay1 = tf.reshape(h0, shape=[tf.shape(encoder_x)[0], 32, 32, 1], name="reshape1_encoder")
             #
@@ -77,7 +77,7 @@ class Model:
 
             h0 = mu.affine(self.Z, Z.shape[1], Z.shape[1] * 2, affine_iter,name,activation=tf.nn.elu)
             affine_iter += 1
-            h1 = mu.affine(h0, h0.shape[1], h0.shape[1], affine_iter, name, activation=tf.nn.tanh)
+            h1 = mu.affine(h0, h0.shape[1], h0.shape[1], affine_iter, name, activation=tf.nn.relu)
             affine_iter += 1
             #
             # lay1 = tf.reshape(h0, shape=[tf.shape(self.Z)[0], 32, 32, 1], name="reshape1_decoder")

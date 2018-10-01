@@ -24,8 +24,8 @@ class VAE:
         self.X = tf.placeholder(dtype=tf.float32,shape=self.shape)
         z_mean, z_std_dev = self.model.encoder(self.X, name="train_encoder")
         self.KLD = tf.reduce_mean(
-            tf.reduce_sum(
-                0.5 * tf.square(z_std_dev) + tf.square(z_mean) - 1 - tf.log(tf.square(z_std_dev))
+            0.5 * tf.reduce_sum(
+                tf.square(z_std_dev) + tf.square(z_mean) - 1 - tf.log(tf.square(z_std_dev))
                 #z_var + tf.square(z_mean) -1 - tf.log(z_var+ 1e-8)
                 , axis=1
             ),
@@ -42,8 +42,7 @@ class VAE:
             tf.reduce_sum(
                 self.X * tf.log(decoded_X + 1e-8) + (1 - self.X) * (tf.log(1e-8 + (1 - decoded_X)))
                 , axis=1
-            ),
-            axis=0
+            )
         )
         self.loss = self.KLD - self.likelihood  # reverse sequence for minimize. ( argmax -> argmin )
         self.optim = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
