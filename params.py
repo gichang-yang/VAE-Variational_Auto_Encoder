@@ -1,1 +1,1 @@
-gpu_mode = False
+gpu_mode = True
