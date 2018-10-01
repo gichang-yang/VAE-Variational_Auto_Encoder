@@ -33,7 +33,7 @@ class VAE:
         )
 
         self.Z = tf.placeholder(dtype=tf.float32,shape=[self.X.shape[0].value, self.labels])
-        tf.set_random_seed(777)
+        #tf.set_random_seed(777)
         dec_z = z_std_dev * tf.random_normal(z_std_dev.shape,0,1,dtype=tf.float32) + z_mean
         self.pred_X = self.model.decoder(self.Z)
 

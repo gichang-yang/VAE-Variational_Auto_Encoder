@@ -114,7 +114,7 @@ class Model:
             # ap_flat = tf.layers.flatten(ap1)
 
             self.affined_decoder = mu.affine(h0,h0.shape[1],self.input_dims[1],affine_iter,name)
-            self.out =tf.sigmoid(self.affined_decoder) #(tf.tanh(self.affined_decoder)+1) / 2
+            self.out =tf.nn.sigmoid(self.affined_decoder) #(tf.tanh(self.affined_decoder)+1) / 2
         return self.out
 
 
