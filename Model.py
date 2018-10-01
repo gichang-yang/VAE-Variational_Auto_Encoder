@@ -20,9 +20,10 @@ class Model:
             #encoder_x = tf.reshape(X,[1,-1])
             encoder_x = tf.layers.flatten(X)
 
-            h0 = mu.affine(encoder_x,encoder_x.shape[1],2 ** 10,affine_iter,name)
+            h0 = mu.affine(encoder_x,encoder_x.shape[1],encoder_x.shape[1] // 2,affine_iter,name,activation=tf.nn.relu)
             affine_iter += 1
-
+            h1 = mu.affine(h0,h0.shape[1],h0.shape[1],affine_iter,name,activation=tf.nn.tanh)
+            affine_iter += 1
             #lay1 = tf.reshape(h0, shape=[tf.shape(encoder_x)[0], 32, 32, 1], name="reshape1_encoder")
             #
             # conv0 = tf.layers.conv2d(
@@ -60,7 +61,7 @@ class Model:
             #
             # ap_flat = tf.layers.flatten(ap1)
 
-            self.fc_layer = mu.affine(h0,h0.shape[1],self.labels * 2,affine_iter,name)
+            self.fc_layer = mu.affine(h1,h1.shape[1],self.labels * 2,affine_iter,name)
             self.lay_out = self.fc_layer#tf.nn.relu(self.fc_layer)
 
             mean = self.lay_out[:,:self.labels]
@@ -74,7 +75,9 @@ class Model:
         with tf.variable_scope(name) and tf.device(tf_utils.gpu_mode(par.gpu_mode)):
             self.Z = Z
 
-            h0 = mu.affine(self.Z, Z.shape[1], 2 ** 10, affine_iter,name)
+            h0 = mu.affine(self.Z, Z.shape[1], Z.shape[1] * 2, affine_iter,name,activation=tf.nn.elu)
+            affine_iter += 1
+            h1 = mu.affine(h0, h0.shape[1], h0.shape[1], affine_iter, name, activation=tf.nn.tanh)
             affine_iter += 1
             #
             # lay1 = tf.reshape(h0, shape=[tf.shape(self.Z)[0], 32, 32, 1], name="reshape1_decoder")
@@ -113,7 +116,7 @@ class Model:
             #
             # ap_flat = tf.layers.flatten(ap1)
 
-            self.affined_decoder = mu.affine(h0,h0.shape[1],self.input_dims[1],affine_iter,name)
+            self.affined_decoder = mu.affine(h1,h1.shape[1],self.input_dims[1],affine_iter,name)
             self.out =tf.nn.sigmoid(self.affined_decoder) #(tf.tanh(self.affined_decoder)+1) / 2
         return self.out
 

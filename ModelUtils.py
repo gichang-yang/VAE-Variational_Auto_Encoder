@@ -34,7 +34,7 @@ def residual(cycle,layer,tensor,dropout,net = 'encoder'):
             )
         #return conv + tensor
 
-def affine(tensor,input_shape,output_shape,num=0,net='encoder'):
+def affine(tensor,input_shape,output_shape,num=0,net='encoder',activation=None):
     w = tf.get_variable(
         "W_"+net+str(num),
         shape=[input_shape, output_shape],
@@ -48,5 +48,9 @@ def affine(tensor,input_shape,output_shape,num=0,net='encoder'):
         initializer=layers.xavier_initializer()
     )
 
-    return tf.matmul(tensor,w) + b
+    out = tf.matmul(tensor,w) + b
+    if activation is None:
+        return out
+    else:
+        return activation(out)
 

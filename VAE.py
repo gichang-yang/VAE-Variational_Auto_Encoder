@@ -24,8 +24,8 @@ class VAE:
         self.X = tf.placeholder(dtype=tf.float32,shape=self.shape)
         z_mean, z_std_dev = self.model.encoder(self.X, name="train_encoder")
         self.KLD = tf.reduce_mean(
-            0.5 * tf.reduce_sum(
-                tf.square(z_std_dev) + tf.square(z_mean) + 1 - tf.log(tf.square(z_std_dev))
+            tf.reduce_sum(
+                0.5 * tf.square(z_std_dev) + tf.square(z_mean) - 1 - tf.log(tf.square(z_std_dev))
                 #z_var + tf.square(z_mean) -1 - tf.log(z_var+ 1e-8)
                 , axis=1
             ),
